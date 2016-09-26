@@ -1,13 +1,9 @@
 [[routing-value]]
-=== Routing a Document to a Shard
+=== 路由文档到分片
 
-When you index a document, it is stored on a single primary shard.((("shards", "routing a document to")))((("documents", "routing a document to a shard")))((("routing a document to a shard"))) How does
-Elasticsearch know which shard a document belongs to?  When we create a new
-document, how does it know whether it should store that document on shard 1 or
-shard 2?
+当你索引一个文件时, 它被存储在一个单独的主分片.((("shards", "routing a document to")))((("documents", "routing a document to a shard")))((("routing a document to a shard"))) Elasticsearch是如何知道文档是属于哪一个分区的呢?  当创建一个新的文档, 它是如何知道文档是应该放在分区1还是分区2?
 
-The process can't be random, since we may need to retrieve the document in the
-future. In fact, it is determined by a simple formula:
+处理不能是随机的,因为以后需要检索文档.实际上,它由一个简单的公式决定:
 
     shard = hash(routing) % number_of_primary_shards
 
