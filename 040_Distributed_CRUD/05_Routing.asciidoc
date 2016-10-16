@@ -1,35 +1,24 @@
 [[routing-value]]
 === 路由文档到分片
 
-当你索引一个文件时, 它被存储在一个单独的主分片.((("shards", "routing a document to")))((("documents", "routing a document to a shard")))((("routing a document to a shard"))) Elasticsearch是如何知道文档是属于哪一个分区的呢?  当创建一个新的文档, 它是如何知道文档是应该放在分区1还是分区2?
+当你索引一个文件时, 它被存储在一个单独的主分片。((("shards", "routing a document to")))((("documents", "routing a document to a shard")))((("routing a document to a shard"))) Elasticsearch是如何知道文档是属于哪一个分区的呢?  当创建一个新的文档, 它是如何知道文档是应该放在分区1还是分区2?
 
-处理不能是随机的,因为以后需要检索文档.实际上,它由一个简单的公式决定:
+处理不能是随机的，因为以后需要检索文档。实际上，它由一个简单的公式决定：
 
     shard = hash(routing) % number_of_primary_shards
 
-The `routing` value is an arbitrary string, which defaults to the document's
-`_id` but can also be set to a custom value. This `routing` string is passed
-through a hashing function to generate a number, which is divided by the
-number of primary shards in the index to return the _remainder_. The remainder
-will always be in the range `0` to `number_of_primary_shards - 1`, and gives
-us the number of the shard where a particular document lives.
+`routing` 值是一个任意字符串，默认是 `_id` 也可以设置为自定义的值
+`routing` 字符串通过哈希算法生成一个数字，除以主分片的下标返回_余数_。余数的范围总是从 `0` 到 `number_of_primary_shards - 1`，
+返回的数字就是特定文档的所在的分片。
 
-This explains why the number of primary shards((("primary shards", "fixed number of, routing and"))) can be set only when an index
-is created and never changed:  if the number of primary shards ever changed in
-the future, all previous routing values would be invalid and documents would
-never be found.
+这也就解释了为什么主分片的数量((("primary shards", "fixed number of, routing and"))) 只能在创建的时候设置并且永远无法修改：
+如果以后主分片的数字改变了，所有之前的路由就变成无效的，而且文档也无法找到了。
 
 [NOTE]
 ====
-Users sometimes think that having a fixed number of primary shards makes it
-difficult to scale out an index later.  In reality, there are techniques
-that make it easy to scale out as and when you need. We talk more about these
-in <<scale>>.
+有时候用户会认为固定数量的分区会导致以后的扩展边的困难。在现实中，当你需要的时候有技术可以使它很容易扩展。我们将在 <<scale>> 章节讨论。
 ====
 
-All document APIs (`get`, `index`, `delete`, `bulk`, `update`, and `mget`)
-accept a `routing` parameter ((("routing parameter")))that can be used to customize the document-to-
-shard mapping. A custom routing value could be used to ensure that all related
-documents--for instance, all the documents belonging to the same user--are
-stored on the same shard. We discuss in detail why you may want to do this in
-<<scale>>.
+所有的稳定API（`get`, `index`, `delete`, `bulk`, `update`, 和 `mget`）都接受 `routing` 参数 ((("routing parameter")))
+，它用来定义文档到分片的映射。自定义的路由值可以用来确保所有相关的文档，例如，所有属于同一用户的文档--存储在同一分片上。
+我们在<<scale>>章节会详细讨论你为什么需要这么做。
