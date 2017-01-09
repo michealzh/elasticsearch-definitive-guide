@@ -1,25 +1,25 @@
 [[partial-updates-to-a-document]]
 === 局部更新文档
 
-`update` API  <<img-distrib-update>>结合了先前说明的读取和写入模式((("updating documents", "partial updates")))((("documents", "partial updates")))。
+如 <<img-distrib-update>> 所示，`update` API 结合了先前说明的读取和写入模式((("updating documents", "partial updates")))((("documents", "partial updates")))。
 
 [[img-distrib-update]]
 .局部更新文档
 image::images/elas_0404.png["局部更新文档"]
 
-以下是用来对文档执行部分更新的步骤顺序：
+以下是部分更新一个文档的步骤：
 
 1. 客户端向 `Node 1` 发送更新请求。
 
-2. 它将请求转发到分配主分片所在的 `Node 3` .
+2. 它将请求转发到主分片所在的 `Node 3` 。
 
-3. `Node 3` 从主分片检索文档，修改 changes `_source` 字段中的JSON，并且尝试重新索引主分片的文档。
-   如果文档已经被另外一个进程修改，它会在放弃前尝试重复步骤3直到达到设置的 `retry_on_conflict` 次数。
+3. `Node 3` 从主分片检索文档，修改 `_source` 字段中的 JSON ，并且尝试重新索引主分片的文档。
+   如果文档已经被另一个进程修改，它会重试步骤 3 ，超过 `retry_on_conflict` 次后放弃。
 
-4. 如果 `Node 3` 成功地更新文档，它将新版本的文档并行转发到 `Node 1` 和 `Node 2` 上的复制分片，重新建立索引。
-   一旦所有副本分片报告成功， `Node 3` 向协调节点报告成功，协调节点向客户端报告成功。
+4. 如果 `Node 3` 成功地更新文档，它将新版本的文档并行转发到 `Node 1` 和 `Node 2` 上的副本分片，重新建立索引。
+   一旦所有副本分片都返回成功， `Node 3` 向协调节点也返回成功，协调节点向客户端返回成功。
 
-`update` API 还接受在 <<新建，索引和删除文档>> 章节中提到的 `routing`， `replication`， `consistency` `timeout` 参数。
+`update` API 还接受在 <<distrib-write>> 章节中介绍的 `routing` 、 `replication` 、 `consistency` 和 `timeout` 参数。
 
 .基于文档的复制
 ****
