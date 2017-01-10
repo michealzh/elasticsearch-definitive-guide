@@ -1,4 +1,4 @@
-[[partial-updates-to-a-document]]
+[[_partial_updates_to_a_document]]
 === 局部更新文档
 
 如 <<img-distrib-update>> 所示，`update` API 结合了先前说明的读取和写入模式((("updating documents", "partial updates")))((("documents", "partial updates")))。
